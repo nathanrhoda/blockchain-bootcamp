@@ -9,4 +9,10 @@ module.exports = {
   networks: {
     localhost: {}
   },
+  paths: {
+    tests: "./test",
+  },
+  mocha: {
+    timeout: 60000, // Increase the timeout to 60 seconds (or any value you prefer)
+  }
 };

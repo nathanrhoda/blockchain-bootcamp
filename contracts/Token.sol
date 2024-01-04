@@ -35,6 +35,7 @@ contract Token {
         returns (bool success) 
     {
         require(balanceOf[msg.sender] >= _value);
+        require(_to != address(0));
 
         balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
         balanceOf[_to] = balanceOf[_to] + _value;

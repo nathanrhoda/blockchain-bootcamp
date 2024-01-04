@@ -6,7 +6,7 @@ const tokens = (n) => {
 }
 
 describe('Token', ()=> {
-    let token, accounts, deployer    
+    let token, accounts, deployer, receiver    
     let tokenName = 'My Token';
     let symbol = 'MT';
     let totalSupply = 1000000;    
@@ -14,9 +14,10 @@ describe('Token', ()=> {
     beforeEach(async () => {
         const Token = await ethers.getContractFactory('Token');
         token = await Token.deploy(tokenName, symbol, totalSupply);
-
+        
         accounts = await ethers.getSigners();
         deployer = accounts[0];
+        receiver = accounts[1];
     });
 
     describe('Deployment', () => {
@@ -40,4 +41,38 @@ describe('Token', ()=> {
             expect(await token.balanceOf(deployer.address)).to.equal(tokens(totalSupply));
         });
     });
+
+    describe('Sending Tokens', () => {
+        let amount, transaction, result
+
+        describe('Success', () => {
+        
+            beforeEach(async () => {
+                amount = tokens(100)
+                transaction = await token.connect(deployer).transfer(receiver.address, amount);            
+                result = await transaction.wait();               
+            });
+
+            it('transfers token balances',async () => {               
+                expect(await token.balanceOf(deployer.address)).to.equal(tokens(totalSupply).sub(amount));
+                expect(await token.balanceOf(receiver.address)).to.equal(amount);                        
+            });
+
+            it('emits Transfer event', async () => {
+                const eventLog = result.events[0];
+                expect(eventLog.event).to.equal('Transfer');
+                expect(eventLog.args.from).to.equal(deployer.address);
+                expect(eventLog.args.to).to.equal(receiver.address);
+                expect(eventLog.args.value).to.equal(amount);
+            });
+        });
+
+        describe('Failure', () => {
+            it('rejects insufficient balances', async () => {
+                let invalidAmount = tokens(100000000);
+                await expect(token.connect(deployer).transfer(receiver.address, invalidAmount)).to.be.reverted;                
+            });            
+        });
+    });
+    
 });

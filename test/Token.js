@@ -18,6 +18,7 @@ describe('Token', ()=> {
         accounts = await ethers.getSigners();
         deployer = accounts[0];
         receiver = accounts[1];
+        exchange = accounts[2];
     });
 
     describe('Deployment', () => {
@@ -78,6 +79,35 @@ describe('Token', ()=> {
                 await expect(token.connect(deployer).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.reverted;
             });
         });
+
+        
+    });    
+
+    describe('Approving Tokens', () => {
+        beforeEach(async () => {
+            amount = tokens(100)
+            transaction = await token.connect(deployer).approve(exchange.address, amount);            
+            result = await transaction.wait();               
+        });
+
+        describe('Success', () => {
+            it('allocates allowance for delegated token spending', async () => {
+                expect(await token.allowance(deployer.address, exchange.address)).to.equal(amount);
+            });
+
+            it('emits approval event', async () => {
+                const eventLog = result.events[0];
+                expect(eventLog.event).to.equal('Approval');
+                expect(eventLog.args.owner).to.equal(deployer.address);
+                expect(eventLog.args.spender).to.equal(exchange.address);
+                expect(eventLog.args.value).to.equal(amount);
+            });
+        });
+
+        describe('Failure', () => {          
+            it('rejects invalid spender', async () => {
+                await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000', amount)).to.be.reverted;
+            });
+        });
     });
-    
 });

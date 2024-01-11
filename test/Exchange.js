@@ -53,6 +53,17 @@ describe('Exchange', ()=> {
         describe('Success', () => {
             it('tracks the token deposit', async () => {
                 expect(await token1.balanceOf(exchange.address)).to.equal(amount);
+                expect(await exchange.tokens(token1.address, user1.address)).to.equal(amount);
+                expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(amount);
+            });            
+
+            it('emits Deposit event', async () => {
+                const eventLog = result.events[1];
+                expect(eventLog.event).to.equal('Deposit');
+                expect(eventLog.args.token).to.equal(token1.address);
+                expect(eventLog.args.user).to.equal(user1.address);
+                expect(eventLog.args.amount).to.equal(amount);
+                expect(eventLog.args.balance).to.equal(amount);
             });
         });
         

@@ -47,7 +47,20 @@ contract Exchange {
         uint256 timestamp
     );
 
-    constructor(address _feeAccount, uint256 _feePercent) public {
+    event Cancel(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        uint256 timestamp
+    );
+
+
+    constructor(address _feeAccount, uint256 _feePercent) 
+        public 
+    {
         feeAccount = _feeAccount;
         feePercent =_feePercent;
     }    
@@ -118,6 +131,18 @@ contract Exchange {
         public 
     {
         _Order storage _order = orders[_id];
-        ordersCancelled[_id] = true;
+        require(address(_order.user) == msg.sender);
+        require(_order.id == _id);
+
+        ordersCancelled[_id] = true;        
+
+        emit Cancel(
+            _order.id, 
+            _order.user, 
+            _order.tokenGet, 
+            _order.amountGet, 
+            _order.tokenGive, 
+            _order.amountGive, 
+            block.timestamp);
     }
 }

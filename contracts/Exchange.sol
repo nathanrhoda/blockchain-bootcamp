@@ -164,7 +164,7 @@ contract Exchange {
 
         require(_id > 0 && _id <= orderCount);
         require(!ordersFilled[_id]);
-        // require(!ordersCancelled[_id] == false);
+        require(!ordersCancelled[_id]);
 
         _trade(
             _order.id, 

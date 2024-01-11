@@ -248,14 +248,14 @@ describe('Exchange', ()=> {
             });
         });
 
-        describe('Filling orders', async () => {
-            beforeEach(async () => {
-                // user2 fills order
-                transaction = await exchange.connect(user2).fillOrder(1);
-                result = await transaction.wait();
-              });
-      
-            describe('Success', async () => {                
+        describe('Filling orders', async () => {      
+            describe('Success', async () => {     
+                beforeEach(async () => {
+                    // user2 fills order
+                    transaction = await exchange.connect(user2).fillOrder(1);
+                    result = await transaction.wait();
+                });
+
                 it('executes the trade and charge fees', async () => {
                     // Token Give
                     expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(tokens(0))
@@ -288,18 +288,23 @@ describe('Exchange', ()=> {
             });
 
             describe('Failure', async () => {
+                let transaction;
                 it('rejects invalid order id', async () => {
                     const invalidOrderId = 99999;
                     await expect(exchange.connect(user2).fillOrder(invalidOrderId)).to.be.reverted;                    
                 });
 
                 it('rejects filled orders', async () => {
-                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted;                    
+                    transaction = await exchange.connect(user2).fillOrder(1);
+                    await transaction.wait();
+
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted;
                 });
 
                 it('rejects cancelled orders', async () => {
-                    await exchange.connect(user1).cancelOrder(1);
-                    await expect(exchange.connect(user1).fillOrder(1)).to.be.reverted;
+                    transaction = await exchange.connect(user1).cancelOrder(1);
+                    await transaction.wait();
+                    await expect(exchange.connect(user2).fillOrder(1)).to.be.reverted;    
                 });
             });
         });

@@ -11,6 +11,7 @@ contract Exchange {
     mapping(address => mapping(address => uint256)) public tokens;
     mapping(uint256 => _Order) public orders;
     mapping(uint256 => bool) public ordersCancelled;
+    mapping(uint256 => bool) public ordersFilled;
     uint256 public orderCount;
 
     event Deposit(
@@ -57,6 +58,16 @@ contract Exchange {
         uint256 timestamp
     );
 
+    event Trade(
+        uint256 id,
+        address user,
+        address tokenGet,
+        uint256 amountGet,
+        address tokenGive,
+        uint256 amountGive,
+        address creator,
+        uint256 timestamp
+    );
 
     constructor(address _feeAccount, uint256 _feePercent) 
         public 
@@ -108,7 +119,6 @@ contract Exchange {
 
         orderCount ++;
 
-        console.log(orderCount);
         orders[orderCount] = _Order(
             orderCount, 
             msg.sender, 
@@ -149,8 +159,13 @@ contract Exchange {
 
     function fillOrder(uint256 _id)
         public 
-    {
+    {        
         _Order storage _order = orders[_id];      
+
+        require(_id > 0 && _id <= orderCount);
+        require(!ordersFilled[_id]);
+        // require(!ordersCancelled[_id] == false);
+
         _trade(
             _order.id, 
             _order.user,
@@ -158,7 +173,9 @@ contract Exchange {
             _order.amountGet,
             _order.tokenGive,            
             _order.amountGive
-        );
+        ); 
+
+        ordersFilled[_order.id] = true;
     }
 
     function _trade
@@ -181,5 +198,16 @@ contract Exchange {
 
         tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;
         tokens[_tokenGive][msg.sender] = tokens[_tokenGive][msg.sender] + _amountGive;
+
+        emit Trade(
+            _orderId,
+            msg.sender,
+            _tokenGet,
+            _amountGet,
+            _tokenGive,
+            _amountGive,
+            _user,
+            block.timestamp
+        );
     }
 }

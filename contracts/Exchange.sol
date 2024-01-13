@@ -80,9 +80,7 @@ contract Exchange {
     public 
     {
         bool isTransferSuccessfull = Token(_token).transferFrom(msg.sender, address(this), _amount);
-
         require(isTransferSuccessfull);
-
         tokens[_token][msg.sender] = tokens[_token][msg.sender] + _amount;
 
         emit Deposit(_token, msg.sender, _amount, tokens[_token][msg.sender]);

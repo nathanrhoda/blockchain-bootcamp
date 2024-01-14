@@ -5,25 +5,29 @@ import {
           loadProvider, 
           loadNetwork, 
           loadAccount,
-          loadToken 
+          loadTokens,
+          loadExchange 
         } from '../store/interactions';
 
 
 function App() {
   const dispatch = useDispatch();
 
-  const loadBlockchainData = async () => {        
-    await loadAccount(dispatch);
-    
+  const loadBlockchainData = async () => {                
     // Connect ethers to blockchain
     const provider = loadProvider(dispatch)    
     const chainId = await loadNetwork(provider, dispatch)
 
-    // Token Smart Contract
-    let token = await loadToken(provider, config[chainId].WZAR.address, dispatch)
-    console.log(token)
-    // const exchange = new ethers.Contract( config[chainId].Exchange.address, Exchange_ABI, provider)
+    await loadAccount(provider, dispatch);
 
+    // Token Smart Contract
+    const Wzar = config[chainId].WZAR.address
+    const Btc = config[chainId].BTC.address
+    const Eth = config[chainId].ETH.address
+  
+    await loadTokens(provider, [Wzar, Btc, Eth], dispatch)
+        
+    await loadExchange(provider, config[chainId].Exchange.address, dispatch)
   }
 
   useEffect(() => { 

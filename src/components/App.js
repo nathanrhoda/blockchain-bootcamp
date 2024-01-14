@@ -9,6 +9,7 @@ import {
           loadExchange 
         } from '../store/interactions';
 
+import Navbar from './Navbar';
 
 function App() {
   const dispatch = useDispatch();
@@ -16,9 +17,13 @@ function App() {
   const loadBlockchainData = async () => {                
     // Connect ethers to blockchain
     const provider = loadProvider(dispatch)    
+    
     const chainId = await loadNetwork(provider, dispatch)
 
-    await loadAccount(provider, dispatch);
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch);
+    })
+    
 
     // Token Smart Contract
     const Wzar = config[chainId].WZAR.address
@@ -36,7 +41,7 @@ function App() {
   return (
     <div>
 
-      {/* Navbar */}
+      <Navbar/>
 
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>

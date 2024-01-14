@@ -13,12 +13,12 @@ export const provider = (state = {}, action) => {
         case 'ACCOUNT_LOADED':
             return {
                 ...state,
-                account: action.account
+                account: action.account                
             }        
         case 'ETHER_BALANCE_LOADED':
                 return {
                     ...state,
-                    account: action.balance
+                    balance: action.balance
                 }        
         default:
             return state

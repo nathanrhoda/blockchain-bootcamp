@@ -41,18 +41,54 @@ export const loadTokens = async (provider, addresses, dispatch) => {
     symbol = await token.symbol()
     dispatch({type: 'TOKEN_2_LOADED', token, symbol})
     
-    // console.log('3', addresses[2])
-    // token = new ethers.Contract( addresses[2], TOKEN_ABI, provider)
-    // symbol = await token.symbol()
-    // dispatch({type: 'TOKEN_3_LOADED', token, symbol})
-    
     return token
 }
 
-export const loadExchange = async (provider, address, dispatch) => {
-    let exchange
-
-    exchange = new ethers.Contract( address, EXCHANGE_ABI, provider)
+export const loadExchange = async (provider, address, dispatch) => {    
+    const exchange = new ethers.Contract( address, EXCHANGE_ABI, provider)
     dispatch({type: 'EXCHANGE_LOADED', exchange})
     return exchange
+}
+
+export const subscribeToEvents = (exchange, dispatch) => {
+    exchange.on('Deposit', (token, user, amount, balance, event) => {
+        console.log(event)
+        dispatch({ type: 'TRANSFER_SUCCESS', event })
+    })
+}
+
+export const loadBalances = async (exchange, tokens, address, dispatch) => {    
+    let balance = ethers.utils.formatUnits( await tokens[0].balanceOf(address), 18)    
+    dispatch({type: 'TOKEN_1_BALANCE_LOADED', balance})
+
+    balance = ethers.utils.formatUnits( await exchange.balanceOf(tokens[0].address, address), 18)
+    dispatch({type: 'EXCHANGE_TOKEN_1_BALANCE_LOADED', balance})
+
+    balance = ethers.utils.formatUnits( await tokens[1].balanceOf(address), 18)    
+    dispatch({type: 'TOKEN_2_BALANCE_LOADED', balance})
+
+    balance = ethers.utils.formatUnits( await exchange.balanceOf(tokens[1].address, address), 18)
+    dispatch({type: 'EXCHANGE_TOKEN_2_BALANCE_LOADED', balance})
+
+}
+
+export const transferTokens = async (provider, exchange, transferType, token, amount, dispatch) => {
+    let transaction
+    
+    dispatch({type: 'TRANSFER_REQUEST'})
+
+    try {
+        const signer = await provider.getSigner()
+        const amountToTranser = ethers.utils.parseUnits(amount.toString(), 18)
+    
+        transaction = await token.connect(signer).approve(exchange.address, amountToTranser)
+        await transaction.wait()
+    
+        transaction = await exchange.connect(signer).depositToken(token.address, amountToTranser)       
+        await transaction.wait()         
+    } catch (error) {
+        dispatch({type: 'TRANSFER_FAIL'})
+    }
+
+    
 }

@@ -61,67 +61,67 @@ async function main() {
     console.log(`Deposited ${amount} Btc from ${user2.address}\n`);
     
 
-    // // Cancel Orders
-    // let orderId
-    // transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(100), Wzar.address, tokens(5)) 
-    // result = await transaction.wait()
-    // console.log(`Made order from ${user1.address}\n`);
+    // Cancel Orders
+    let orderId
+    transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(100), Wzar.address, tokens(5)) 
+    result = await transaction.wait()
+    console.log(`Made order from ${user1.address}\n`);
 
-    // console.log(result);
-    // orderId = result.events[0].args.id;
-    // transaction = await exchange.connect(user1).cancelOrder(orderId);
-    // result = await transaction.wait();
-    // console.log(`Cancelled order from ${user1.address}\n`);
+    console.log(result);
+    orderId = result.events[0].args.id;
+    transaction = await exchange.connect(user1).cancelOrder(orderId);
+    result = await transaction.wait();
+    console.log(`Cancelled order from ${user1.address}\n`);
 
-    // await wait(1);
+    await wait(1);
 
-    // // Fill & Cancel Orders
-    // transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(100), Wzar.address, tokens(10));
-    // result = await transaction.wait();
-    // console.log(`Made order from ${user1.address}\n`);
+    // Fill & Cancel Orders
+    transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(100), Wzar.address, tokens(10));
+    result = await transaction.wait();
+    console.log(`Made order from ${user1.address}\n`);
 
-    // orderId = result.events[0].args.id;
-    // transaction = await exchange.connect(user2).fillOrder(orderId); 
-    // result = await transaction.wait();
-    // console.log(`Filled order from ${user1.address}\n`);
+    orderId = result.events[0].args.id;
+    transaction = await exchange.connect(user2).fillOrder(orderId); 
+    result = await transaction.wait();
+    console.log(`Filled order from ${user1.address}\n`);
 
-    // await wait(1);
+    await wait(1);
 
-    // transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(50), Wzar.address, tokens(15));
-    // result = await transaction.wait();
-    // console.log(`Made order from ${user1.address}\n`);
+    transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(50), Wzar.address, tokens(15));
+    result = await transaction.wait();
+    console.log(`Made order from ${user1.address}\n`);
 
-    // orderId = result.events[0].args.id;
-    // transaction = await exchange.connect(user2).fillOrder(orderId); 
-    // result = await transaction.wait();
-    // console.log(`Filled order from ${user1.address}\n`);
+    orderId = result.events[0].args.id;
+    transaction = await exchange.connect(user2).fillOrder(orderId); 
+    result = await transaction.wait();
+    console.log(`Filled order from ${user1.address}\n`);
 
-    // await wait(1);
+    await wait(1);
 
-    // transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(200), Wzar.address, tokens(20));
-    // result = await transaction.wait();
-    // console.log(`Made order from ${user1.address}\n`);
+    transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(200), Wzar.address, tokens(20));
+    result = await transaction.wait();
+    console.log(`Made order from ${user1.address}\n`);
 
-    // orderId = result.events[0].args.id;
-    // transaction = await exchange.connect(user2).fillOrder(orderId); 
-    // result = await transaction.wait();
-    // console.log(`Filled order from ${user1.address}\n`);
+    orderId = result.events[0].args.id;
+    transaction = await exchange.connect(user2).fillOrder(orderId); 
+    result = await transaction.wait();
+    console.log(`Filled order from ${user1.address}\n`);
 
-    // await wait(1);
+    await wait(1);
 
-    // for(let i = 1; i <= 10; i++) {
-    //     transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(10*i), Wzar.address, tokens(10));
-    //     result = await transaction.wait();
-    //     console.log(`Made order from ${user1.address}\n`);
-    // }
+    for(let i = 1; i <= 10; i++) {
+        transaction = await exchange.connect(user1).makeOrder(Btc.address, tokens(10*i), Wzar.address, tokens(10));
+        result = await transaction.wait();
+        console.log(`Made order from ${user1.address}\n`);
+    }
     
-    // await wait(1);
+    await wait(1);
 
-    // for(let i = 1; i <= 10; i++) {
-    //     transaction = await exchange.connect(user2).makeOrder(Wzar.address, tokens(10), Btc.address, tokens(10*1));
-    //     result = await transaction.wait();
-    //     console.log(`Made order from ${user2.address}\n`);
-    // }
+    for(let i = 1; i <= 10; i++) {
+        transaction = await exchange.connect(user2).makeOrder(Wzar.address, tokens(10), Btc.address, tokens(10*1));
+        result = await transaction.wait();
+        console.log(`Made order from ${user2.address}\n`);
+    }
 
     await wait(1);
 }

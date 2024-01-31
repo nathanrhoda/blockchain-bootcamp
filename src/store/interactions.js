@@ -64,6 +64,11 @@ export const subscribeToEvents = (exchange, dispatch) => {
     const order = event.args
     dispatch({ type: 'NEW_ORDER_SUCCESS', order, event })
   })
+
+  exchange.on('Trade', (id, user, tokenGet, amountGet, tokenGive, amountGive, timestamp, event) => {
+    const order = event.args
+    dispatch({ type: 'NEW_ORDER_SUCCESS', order, event })
+  })
 }
 
 // ------------------------------------------------------------------------------
@@ -87,6 +92,16 @@ export const loadBalances = async (exchange, tokens, account, dispatch) => {
 
 export const loadAllOrders = async (provider, exchange, dispatch) => {
   const block = await provider.getBlockNumber()
+
+  const cancelStream = await exchange.queryFilter('Cancel', 0, block)
+  const cancelledOrders = cancelStream.map(event => event.args)
+
+  dispatch({ type: 'CANCELLED_ORDERS_LOADED', cancelledOrders })
+
+  const tradeStream = await exchange.queryFilter('Trade', 0, block)
+  const filledOrders = tradeStream.map(event => event.args)
+
+  dispatch({ type: 'FILLED_ORDERS_LOADED', filledOrders })
 
   const orderStream = await exchange.queryFilter('Order', 0, block)
   const allOrders = orderStream.map(event => event.args)
@@ -133,14 +148,9 @@ export const makeBuyOrder = async (provider, exchange, tokens, order, dispatch) 
   dispatch({ type: 'NEW_ORDER_REQUEST' })
 
   try {
-    const signer = await provider.getSigner()
-    console.log('token get', tokenGet)
-    console.log('amount get', amountGet)
-    console.log('token give', tokenGive)
-    console.log('token give', amountGive)
+    const signer = await provider.getSigner()    
     const transaction = await exchange.connect(signer).makeOrder(tokenGet, amountGet, tokenGive, amountGive)
     await transaction.wait()
-    console.log('after web3')
   } catch (error) {
     dispatch({ type: 'NEW_ORDER_FAIL' })
   }

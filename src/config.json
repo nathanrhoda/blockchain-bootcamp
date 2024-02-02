@@ -18,6 +18,18 @@
         "explorerURL": "#"
     },
     "11155111": {
+        "Exchange": {
+            "address": "0x6ff9D1FEb45c93C5dc6d59a31F92Fd2A2A84d8EA"
+        },
+        "WZAR": {
+            "address": "0xDf7e9aFfF5D2a168B40D4B2f70934046Cb52885D"
+        },
+        "BTC": {
+            "address": "0x84782971721cA6AAcC54Fc4b07DBE6456158B833"
+        },
+        "ETH": {
+            "address": "0xD78288006001c0110016b301a90c1DC0a82697E5"
+        },
         "explorerURL": "https://sepolia.etherscan.io/"
     }
 

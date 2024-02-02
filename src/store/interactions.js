@@ -192,7 +192,6 @@ export const cancelOrder = async (provider, exchange, order, dispatch) => {
 }
 
 export const filledOrder = async (provider, exchange, order, dispatch) => {
-  console.log('fill')
   dispatch({ type: 'FILL_ORDER_REQUEST', order })
 
   try {
@@ -200,7 +199,6 @@ export const filledOrder = async (provider, exchange, order, dispatch) => {
     const transaction = await exchange.connect(signer).fillOrder(order.id)
     await transaction.wait()  
   } catch (error) {
-    console.log(error)
     dispatch({ type: 'FILL_ORDER_FAIL' })
   }
 }
